@@ -1,13 +1,7 @@
-import { useState } from "react";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import CardMedia from "@material-ui/core/CardMedia";
-import Typography from "@material-ui/core/Typography";
 import { Player } from "../interfaces";
-import { Collapse, Container, IconButton } from "@material-ui/core";
+import { Container } from "@material-ui/core";
 import TinderCard from "react-tinder-card";
-import GamercardDetails from "./GamercardDetails";
 import axios from "axios";
 import GamerCardMain from "./GamerCardMain";
 
@@ -24,14 +18,14 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function onCardLeftScreen(dir: string, playerDetails: Player) {
+async function onCardLeftScreen(dir: string, playerDetails: Player) {
   if (dir == "right") {
-    axios.post("/matches", playerDetails);
-  } else if (dir == "left") {
-    axios.delete("/players", {
-      data: { gamertag: playerDetails.gamertag },
-    });
+    await axios.post("/matches", playerDetails);
   }
+
+  await axios.delete("/players", {
+    data: { gamertag: playerDetails.gamertag },
+  });
 }
 
 function Gamercard(props: GamercardProps) {

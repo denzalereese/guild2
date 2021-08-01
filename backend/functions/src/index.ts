@@ -284,66 +284,68 @@ app.get('/matches', (req, res) => {
 
 //seed DB
 
-// function shuffle(arr: any) {
-//     var currentIndex = arr.length,
-//       randomIndex;
+function shuffle(arr: any) {
+    var currentIndex = arr.length,
+      randomIndex;
   
-//     // While there remain elements to shuffle...
-//     while (0 !== currentIndex) {
-//       // Pick a remaining element...
-//       randomIndex = Math.floor(Math.random() * currentIndex);
-//       currentIndex--;
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
   
-//       // And swap it with the current element.
-//       [arr[currentIndex], arr[randomIndex]] = [
-//         arr[randomIndex],
-//         arr[currentIndex],
-//       ];
-//     }
+      // And swap it with the current element.
+      [arr[currentIndex], arr[randomIndex]] = [
+        arr[randomIndex],
+        arr[currentIndex],
+      ];
+    }
   
-//     return arr;
-//   }
+    return arr;
+  }
 
-// const getStreams = async () => {
-    //   await axios
-    //     .get(twitchApiBaseUrl + "/streams", {
-    //       headers: twitchAuthHeaders,
-    //       params: {
-    //         first: 100,
-    //       },
-    //     })
-    //     .then(async (res) => {
-    //       const loginNames = res.data.data.map((stream: any) => {
-    //         return stream.user_login;
-    //       });
+app.get('/seed', async (request, response) => {
+    await axios
+        .get(twitchApiBaseUrl + "/streams", {
+          headers: twitchAuthHeaders,
+          params: {
+            first: 100,
+          },
+        })
+        .then(async (res) => {
+          const loginNames = res.data.data.map((stream: any) => {
+            return stream.user_login;
+          });
 
-    //       const userArray: any[] = [];
-    //       loginNames.forEach((loginName: string) => {
-    //         userArray.push({
-    //           email: `${loginName}@gmail.com`,
-    //           password: "guild123",
-    //           gamertag: loginName,
-    //         });
-    //       });
+          const userArray: any[] = [];
+          loginNames.forEach((loginName: string) => {
+            userArray.push({
+              playerId: loginName,
+              gamertag: loginName,
+              email: `${loginName}@gmail.com`,
+            });
+          });
 
-    //       await axios
-    //         .get(twitchApiBaseUrl + "/chat/emotes/global", {
-    //           headers: twitchAuthHeaders,
-    //         })
-    //         .then((res) => {
-    //           const emotesArray = shuffle(res.data.data);
-    //           for (let i = 0; i < userArray.length; i++) {
-    //             userArray[i].favoriteEmote = emotesArray[i].name;
-    //           }
-    //         });
-    //       console.log(userArray);
-    //       let promises = userArray.map((user) => {
-    //         return axios.post("/signup", user);
-    //       });
+          await axios
+            .get(twitchApiBaseUrl + "/chat/emotes/global", {
+              headers: twitchAuthHeaders,
+            })
+            .then((res) => {
+              const emotesArray = shuffle(res.data.data);
+              for (let i = 0; i < userArray.length; i++) {
+                userArray[i].favoriteEmote = emotesArray[i].name;
+              }
+            });
+          let promises = userArray.map((user) => {
+            return db.collection('players').doc(`/${user.gamertag}`).set(user)
+          });
 
-    //       Promise.all(promises).then((user) => console.log(user));
-    //     });
-    // };
+          Promise.all(promises).then(res => { return response.status(200).json(res)})
+        });
+        return response.status(200)
+})
+      
+    
 
     // getStreams();
 
