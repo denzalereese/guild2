@@ -244,6 +244,17 @@ app.get('/players', (req, res) => {
         });
 });
 
+app.delete('/players', (req, res) => {
+    const gamertag = req.body.gamertag
+    db.collection('players').doc(`/${gamertag}`).delete()
+        .then(response => {
+            res.status(200).json(response)
+        })
+        .catch(err => {
+            res.status(500).json({err: err.code})
+        })
+})
+
 app.post('/matches', (req, res) => {
     const newMatch = {
         playerId: req.body.playerId,

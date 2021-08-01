@@ -24,9 +24,13 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function onSwipe(dir: string, playerDetails: Player) {
+function onCardLeftScreen(dir: string, playerDetails: Player) {
   if (dir == "right") {
     axios.post("/matches", playerDetails);
+  } else if (dir == "left") {
+    axios.delete("/players", {
+      data: { gamertag: playerDetails.gamertag },
+    });
   }
 }
 
@@ -40,7 +44,7 @@ function Gamercard(props: GamercardProps) {
     return (
       <Container className={classes.swipe}>
         <TinderCard
-          onSwipe={(dir) => onSwipe(dir, playerDetails)}
+          onCardLeftScreen={(dir) => onCardLeftScreen(dir, playerDetails)}
           preventSwipe={["up", "down"]}
         >
           <GamerCardMain playerDetails={playerDetails} />
