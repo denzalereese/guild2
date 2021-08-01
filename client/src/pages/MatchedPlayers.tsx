@@ -1,3 +1,5 @@
+import { Container } from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import GamerCardMain from "../components/GamerCardMain";
@@ -26,11 +28,17 @@ function MatchedPlayers() {
 
   if (matchedPlayersState != null) {
     return (
-      <div>
-        {matchedPlayersState.players.map((player: any) => {
-          return <GamerCardMain key={player.playerId} playerDetails={player} />;
-        })}
-      </div>
+      <Container>
+        <Grid container>
+          {matchedPlayersState.players.map((player: any) => {
+            return (
+              <Grid item xs={12} md={4}>
+                <GamerCardMain key={player.playerId} playerDetails={player} />
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Container>
     );
   }
   return <></>;
